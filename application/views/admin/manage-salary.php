@@ -1,4 +1,6 @@
-<div class="content-wrapper">
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
         Salary Management
@@ -10,6 +12,7 @@
       </ol>
     </section>
 
+    <!-- Main content -->
     <section class="content">
       <div class="row">
 
@@ -36,6 +39,7 @@
             <div class="box-header">
               <h3 class="box-title">Manage Salary</h3>
             </div>
+            <!-- /.box-header -->
             <div class="box-body">
               <div class="row" style="margin-bottom:10px">
                 <div class="col-md-4">
@@ -69,15 +73,17 @@
                     <th>Slno.</th>
                     <th>Staff Name</th>
                     <th>Department</th>
+                    <!-- <th>Pic</th> -->
                     <th>Basic Salary</th>
                     <th>Allowance</th>
                     <th>Working Days (monthly)</th>
-                    <th>Login Days</th> <th>Add Working Days</th> <th>Worked Days (Total)</th> <th>Leaves</th>
+                    <th>Leaves</th>
                     <th>Total Amount</th>
                     <th>Paid On</th>
                     <th>Invoice</th>
                     <th>Actions</th>
-                    </tr>
+                    <!-- if you are adding/deleting any fields, please change the data index used for filtering in footer.php -->
+                  </tr>
                   </thead>
                   <tbody>
                   <?php 
@@ -92,10 +98,10 @@
                         <td><?php echo $cnt['basic_salary']; ?></td>
                         <td><?php echo $cnt['allowance']; ?></td> 
                         <td><?php echo $cnt['working_days']; ?></td>
-                        <td><?php echo $cnt['actual_login_days']; ?></td> <td><?php echo $cnt['added_working_days']; ?></td> <td><?php echo $cnt['worked_days']; ?></td> <td><?php echo $cnt['no_of_leaves']; ?></td>
+                        <td><?php echo $cnt['no_of_leaves']; ?></td>
                         <td><?php echo $cnt['total']; ?></td>
                         <td><?php echo date('d-m-Y', strtotime($cnt['added_on'])); ?></td>
-                        <td><a href="<?php echo base_url(); ?>salary-invoice/<?php echo $cnt['id']; ?>" class="btn btn-warning">Invoice</a></td>
+                        <td><a href="<?php echo base_url(); ?>salary-invoice/<?php echo $cnt['id']; ?>" class="btn btn-warning">Invioce</a></td>
                         <td>
                           <a href="<?php echo base_url(); ?>delete-salary/<?php echo $cnt['id']; ?>" class="btn btn-danger">Delete</a>
                         </td>
@@ -109,8 +115,16 @@
                 </table>
               </div>
             </div>
-            </div>
+            <!-- /.box-body -->
           </div>
+          <!-- /.box -->
         </div>
-      </section>
-    </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+    
