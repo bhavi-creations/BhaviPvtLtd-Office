@@ -1,0 +1,5 @@
+ALTER TABLE `salary_tbl`
+ADD COLUMN `actual_login_days` INT(11) DEFAULT 0 AFTER `worked_days`;
+
+ALTER TABLE `salary_tbl`
+ADD COLUMN `added_working_days` INT(11) DEFAULT 0 AFTER `actual_login_days`;
