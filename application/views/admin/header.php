@@ -143,6 +143,7 @@
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url(); ?>add-salary"><i class="fa fa-circle-o"></i> Add Salary</a></li>
               <li><a href="<?php echo base_url(); ?>manage-salary"><i class="fa fa-circle-o"></i> Manage Salary</a></li>
+              <li><a href="<?php echo base_url(); ?>Salary/view_all_payslips"><i class="fa fa-circle-o"></i> All Payslips</a></li>
             </ul>
           </li>
 
@@ -156,9 +157,13 @@
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url(); ?>add-client"><i class="fa fa-circle-o"></i> Add Client</a></li>
               <li><a href="<?php echo base_url(); ?>manage-client"><i class="fa fa-circle-o"></i> Manage Client</a></li>
+              <li class="<?= ($this->uri->segment(1) == 'client_advances') ? 'active' : ''; ?>">
+                <a href="<?= base_url('client_advances'); ?>">
+                  <i class="fa fa-circle-o"></i> <span>Client Advances</span>
+                </a>
+              </li>
             </ul>
           </li>
-
           <!--<li class="treeview">-->
           <!--  <a href="#">-->
           <!--    <i class="fa fa-cubes"></i> <span>Suppliers</span>-->
@@ -208,12 +213,12 @@
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url(); ?>add-project-tasks"><i class="fa fa-circle-o"></i> Add Project Tasks</a></li>
               <li><a href="<?php echo base_url(); ?>manage-project-tasks"><i class="fa fa-circle-o"></i> Manage Project Tasks</a></li>
-                <li><a href="<?php echo base_url(); ?>manage-worksheets"><i class="fa fa-circle-o"></i>Manage Worksheets</a></li>  <!--aaded by raklumar-->
+              <li><a href="<?php echo base_url(); ?>manage-worksheets"><i class="fa fa-circle-o"></i>Manage Worksheets</a></li> <!--aaded by raklumar-->
             </ul>
           </li>
           <!-- <li class="treeview"><span>Manage Worksheets</span></li> -->
-         
-      
+
+
 
           <li class="treeview">
             <a href="#">
@@ -254,7 +259,7 @@
             </ul>
           </li>
 
-           <li class="treeview">
+          <li class="treeview">
             <a href="#">
               <i class="fa fa-cogs"></i> <span>Settings</span>
               <span class="pull-right-container">

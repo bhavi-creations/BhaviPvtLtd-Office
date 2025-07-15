@@ -7,9 +7,15 @@ class Salary extends CI_Controller
     function __construct()
     {
         parent::__construct();
+        // Ensure Session library is always loaded here or in autoload.php
+        $this->load->library('session'); // Redundant if in autoload, but harmless
         if (! $this->session->userdata('logged_in')) {
             redirect(base_url() . 'login');
         }
+        $this->load->model('Salary_model');
+        $this->load->model('Staff_model');    // Make sure Staff_model is loaded if Payslip_model uses it
+        $this->load->model('Payslip_model');  // <<< NEW: Load the Payslip_model here
+        // Load any other models or helpers needed by this controller
     }
 
 
@@ -128,86 +134,115 @@ class Salary extends CI_Controller
     }
     public function insert()
     {
+        $current_month = date('m');
+        $current_year = date('Y');
 
-        echo "<pre>";
-        var_dump($_POST); // Add this line
-        echo "</pre>";
-        // Get the current month and year for this salary entry
-        $current_month = date('m'); // e.g., '07' for July
-        $current_year = date('Y');   // e.g., '2025'
-
-        // Correctly map POST variables based on the 'name' attributes in your HTML
-        $id = $this->input->post('staff_id'); // Assuming this is an array of staff IDs
-        $basic = $this->input->post('basic_salary'); // Assuming this is an array of basic salaries
-        $allowance = $this->input->post('add_allowance'); // Assuming this is an array of allowances
-
-        $add_working_days_array = $this->input->post('add_working_days'); // Manually entered "Add Working Days"
-        $working_days_month_fixed = $this->input->post('working_days_month'); // Fixed working days in month (e.g., 25)
-        $employee_login_days_actual_array = $this->input->post('employee_login_days'); // Actual login days from attendance
-
-        $no_of_leaves = $this->input->post('no_of_leaves'); // Assuming this is an array of leaves
-
+        $id = $this->input->post('staff_id');
+        $basic = $this->input->post('basic_salary');
+        $allowance = $this->input->post('add_allowance');
+        $add_working_days_array = $this->input->post('add_working_days');
+        $working_days_month_fixed = $this->input->post('working_days_month');
+        $employee_login_days_actual_array = $this->input->post('employee_login_days');
+        $no_of_leaves = $this->input->post('no_of_leaves');
         $salary_per_day = $this->input->post('salary_per_day');
+        $total = $this->input->post('salary_to_be_paid');
+        $added = $this->session->userdata('userid');
 
-        $total = $this->input->post('salary_to_be_paid'); // Assuming this is an array of totals
-        $added = $this->session->userdata('userid'); // Correctly getting added_by from session
+        $gross_salary_array = $this->input->post('gross_salary');
+        $pf_deduction_array = $this->input->post('pf_deduction');
+        $esi_deduction_array = $this->input->post('esi_deduction');
+        $professional_tax_deduction_array = $this->input->post('professional_tax_deduction');
+        $tds_deduction_array = $this->input->post('tds_deduction');
+        $other_deductions_array = $this->input->post('other_deductions');
+        $net_payable_salary_array = $this->input->post('net_payable_salary');
 
-        $affected_rows_count = 0; // Initialize a counter for affected rows
 
-        // Add a check to ensure $id is an array and not empty before trying to loop
+        $affected_rows_count = 0;
+
         if (is_array($id) && count($id) > 0) {
+            // --- REMOVED: Manual loading and instantiation of Payslip controller ---
+            // This was causing the "Unable to locate specified class: Session.php" error
+            // $this->load->library('user_agent');
+            // $this->load->helper('url');
+            // require_once APPPATH . 'controllers/Payslip.php';
+            // $payslip_controller = new Payslip();
+            // $payslip_controller->__construct();
+            // --- END REMOVED CODE ---
+
             for ($i = 0; $i < count($id); $i++) {
-                // Use null coalescing operator (??) to safely get values from arrays,
-                // defaulting to null or empty string/zero if an index is missing.
                 $staff_id_val = $id[$i] ?? null;
-
                 $basic_salary_val = str_replace(',', '', $basic[$i] ?? '0');
-                $basic_salary_val = intval($basic_salary_val); // Ensure it's an integer
-                $allowance_val = $allowance[$i] ?? null;
-
+                $basic_salary_val = intval($basic_salary_val);
+                $allowance_val = $allowance[$i] ?? 0;
                 $add_working_days_val = $add_working_days_array[$i] ?? 0;
                 $working_days_month_val = $working_days_month_fixed[$i] ?? null;
-                $employee_login_days_val = $employee_login_days_actual_array[$i] ?? null; // Original login days
+                $employee_login_days_val = $employee_login_days_actual_array[$i] ?? 0;
+                $no_of_leaves_val = $no_of_leaves[$i] ?? 0;
+                $salary_per_day_val = $salary_per_day[$i] ?? 0;
+                $total_val = $total[$i] ?? 0;
 
-                $no_of_leaves_val = $no_of_leaves[$i] ?? null;
-                $salary_per_day_val = $salary_per_day[$i] ?? 0; // Default to 0 if not provided
-                $total_val = $total[$i] ?? null;
+                $gross_salary_val = $gross_salary_array[$i] ?? ($basic_salary_val + $allowance_val);
+                $pf_deduction_val = $pf_deduction_array[$i] ?? 0;
+                $esi_deduction_val = $esi_deduction_array[$i] ?? 0;
+                $professional_tax_deduction_val = $professional_tax_deduction_array[$i] ?? 0;
+                $tds_deduction_val = $tds_deduction_array[$i] ?? 0;
+                $other_deductions_val = $other_deductions_array[$i] ?? 0;
+                $total_deductions_val = $pf_deduction_val + $esi_deduction_val + $professional_tax_deduction_val + $tds_deduction_val + $other_deductions_val;
+                $net_payable_salary_val = $gross_salary_val - $total_deductions_val;
 
-                // Calculate worked_days as the sum of employee_login_days and add_working_days
                 $worked_days_val = ($employee_login_days_val !== null ? (int)$employee_login_days_val : 0) +
                     ($add_working_days_val !== null ? (int)$add_working_days_val : 0);
 
-                // Ensure 'total' is numeric and greater than 0 before inserting for this staff member
                 if (is_numeric($total_val) && $total_val > 0) {
                     $data = array(
-                        'staff_id'               => $staff_id_val,
-                        'basic_salary'           => $basic_salary_val,
-                        'allowance'              => $allowance_val,
-                        'working_days'           => $working_days_month_val, // This is the fixed monthly working days (e.g., 25)
-                        'worked_days'            => $worked_days_val,        // This is the SUM (Login Days + Add Working Days)
-                        'actual_login_days'      => $employee_login_days_val, // NEW: Store actual login days separately
-                        'added_working_days'     => $add_working_days_val,    // NEW: Store manually added working days separately
-                        'payslip'                => '',
-                        'actual_login_days'      => $employee_login_days_val,
-                        'added_working_days'     => $add_working_days_val,
-                        'no_of_leaves'           => $no_of_leaves_val,
-                        'salary_per_day'         => $salary_per_day_val,
-                        'total'                  => $total_val,
-                        'added_by'               => $added,
-                        'updated_on'             => date('Y-m-d'),
-
-                        'month'                  => (int)$current_month,
-                        'year'                   => (int)$current_year
+                        'staff_id'                   => $staff_id_val,
+                        'basic_salary'               => $basic_salary_val,
+                        'allowance'                  => $allowance_val,
+                        'gross_salary'               => $gross_salary_val,
+                        'working_days'               => $working_days_month_val,
+                        'worked_days'                => $worked_days_val,
+                        'actual_login_days'          => $employee_login_days_val,
+                        'added_working_days'         => $add_working_days_val,
+                        'no_of_leaves'               => $no_of_leaves_val,
+                        'salary_per_day'             => $salary_per_day_val,
+                        'total'                      => $total_val,
+                        'pf_deduction'               => $pf_deduction_val,
+                        'esi_deduction'              => $esi_deduction_val,
+                        'professional_tax_deduction' => $professional_tax_deduction_val,
+                        'tds_deduction'              => $tds_deduction_val,
+                        'other_deductions'           => $other_deductions_val,
+                        'net_payable_salary'         => $net_payable_salary_val,
+                        'added_by'                   => $added,
+                        'updated_on'                 => date('Y-m-d'),
+                        'month'                      => (int)$current_month,
+                        'year'                       => (int)$current_year
                     );
 
- 
                     $this->Salary_model->insert_salary($data);
-                    $affected_rows_count += $this->db->affected_rows();
+                    $salary_id = $this->db->insert_id();
+
+                    if ($salary_id) {
+                        // <<< UPDATED: Call the method from the Payslip_model
+                        $payslip_pdf_path = $this->Payslip_model->generate_and_save_payslip_pdf(
+                            $staff_id_val,
+                            $current_month,
+                            $current_year
+                        );
+
+                        if ($payslip_pdf_path) {
+                            $this->Salary_model->update_payslip_path($salary_id, $payslip_pdf_path);
+                            $affected_rows_count++;
+                        } else {
+                            log_message('error', 'Failed to generate or save payslip for staff_id: ' . $staff_id_val);
+                        }
+                    } else {
+                        log_message('error', 'Failed to insert salary for staff_id: ' . $staff_id_val);
+                    }
                 }
             }
 
             if ($affected_rows_count > 0) {
-                $this->session->set_flashdata('success', "Salary Added Successfully for " . $affected_rows_count . " staff members.");
+                $this->session->set_flashdata('success', "Salary Added Successfully for " . $affected_rows_count . " staff members. Payslips generated.");
             } else {
                 $this->session->set_flashdata('error', "Sorry, Salary Adding Failed or No valid records were inserted. Please check calculations and ensure 'Total' is greater than 0.");
             }
@@ -345,5 +380,54 @@ class Salary extends CI_Controller
         } else {
             echo '<div class="box-body"><p>No staff found for the selected department or all staff have a salary entry for this month.</p></div>';
         }
+    }
+
+    public function view_all_payslips()
+    {
+        if (! $this->session->userdata('logged_in')) {
+            redirect(base_url() . 'login');
+        }
+
+        $data['title'] = "All Generated Payslips";
+        $data['all_payslips'] = $this->Salary_model->get_all_payslip_details();
+
+        // Loading header, main content, and footer as specified by you.
+        $this->load->view('admin/header', $data); // Assuming header.php is in application/views/admin/
+        $this->load->view('admin/all_payslips', $data); // Your main payslips content
+        $this->load->view('admin/footer'); // Assuming footer.php is in application/views/admin/
+
+    }
+
+    public function view_payslip($salary_id)
+{
+    if (! $this->session->userdata('logged_in')) {
+        redirect(base_url() . 'login');
+    }
+
+    $this->load->helper('download');
+    $this->load->helper('file');
+
+    $payslip_relative_path = $this->Salary_model->get_payslip_path_by_salary_id($salary_id);
+
+    if ($payslip_relative_path) {
+        $full_file_path = FCPATH . $payslip_relative_path;
+
+        // --- ADD THESE DEBUG LINES ---
+        log_message('debug', 'Attempting to view payslip. Salary ID: ' . $salary_id);
+        log_message('debug', 'Relative Path from DB: ' . $payslip_relative_path);
+        log_message('debug', 'Full Server Path: ' . $full_file_path);
+        log_message('debug', 'File exists: ' . (file_exists($full_file_path) ? 'TRUE' : 'FALSE'));
+        // --- END DEBUG LINES ---
+
+        if (file_exists($full_file_path)) {
+            force_download($full_file_path, NULL);
+        } else {
+            log_message('error', 'Payslip file not found on server: ' . $full_file_path);
+            show_error('Payslip file not found. It may have been moved or deleted.', 404);
+        }
+    } else {
+        log_message('error', 'Payslip path not found in database for salary ID: ' . $salary_id);
+        show_error('Payslip not found for this record.', 404);
+    }
     }
 }

@@ -1,254 +1,193 @@
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Payslip - <?php echo $employee_data['staff_name']; ?> - <?php echo $pay_month; ?> <?php echo $pay_year; ?></title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 20px;
-                font-size: 10px; /* Reduced font size for better fit on A4 */
-            }
-            .container {
-                width: 100%;
-                margin: 0 auto;
-                border: 1px solid #ccc;
-                padding: 20px;
-                box-sizing: border-box;
-            }
-            .header, .footer {
-                text-align: center;
-                margin-bottom: 20px;
-            }
-            .header img {
-                max-width: 150px;
-                height: auto;
-                margin-bottom: 10px;
-            }
-            .company-info {
-                font-size: 12px;
-                font-weight: bold;
-                margin-bottom: 15px;
-            }
-            .employee-details, .salary-details {
-                width: 100%;
-                margin-bottom: 20px;
-                border-collapse: collapse;
-            }
-            .employee-details th, .employee-details td,
-            .salary-details th, .salary-details td {
-                border: 1px solid #eee;
-                padding: 8px;
-                text-align: left;
-            }
-            .employee-details th, .salary-details th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-            }
-            .salary-summary {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }
-            .salary-summary th, .salary-summary td {
-                border: 1px solid #eee;
-                padding: 8px;
-                text-align: left;
-            }
-            .salary-summary .total-row th, .salary-summary .total-row td {
-                font-weight: bold;
-                background-color: #e0e0e0;
-            }
-            .signatures {
-                margin-top: 40px;
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-                clear: both; /* Ensure signatures are below other content */
-            }
-            .signature-block {
-                width: 48%;
-                text-align: center;
-            }
-            .signature-block img {
-                max-width: 100px;
-                height: auto;
-                display: block;
-                margin: 0 auto 5px auto;
-            }
-            .signature-block p {
-                margin: 0;
-                padding: 0;
-                border-top: 1px solid #000;
-                display: inline-block;
-                padding-top: 5px;
-            }
-            .text-right {
-                text-align: right;
-            }
-            .text-center {
-                text-align: center;
-            }
-            .stamp-section {
-                text-align: center;
-                margin-top: 20px;
-            }
-            .stamp-section img {
-                max-width: 120px;
-                height: auto;
-                opacity: 0.7; /* Make stamp slightly transparent */
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <?php if (!empty($company_logo_path)): ?>
-                    <img src="<?php echo base_url($company_logo_path); ?>" alt="Company Logo">
-                <?php endif; ?>
-                <div class="company-info">
-                    <p><strong>[Your Company Name Here]</strong></p>
-                    <p>[Your Company Address]</p>
-                    <p>[Your Company Contact Info]</p>
-                </div>
-                <h2>Payslip for <?php echo $pay_month; ?> <?php echo $pay_year; ?></h2>
-            </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payslip - <?= html_escape($staff->staff_name ?? 'N/A') ?> - <?= html_escape($month_name) ?> <?= html_escape($year) ?></title>
+    <style>
+        /* Basic styling for the payslip */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px; /* Adjust as needed for your PDF size */
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative; /* For logo positioning */
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        /* Style for Company Logo */
+        .company-logo {
+            position: absolute;
+            top: 0; /* Adjust vertical position */
+            right: 0; /* Adjust horizontal position (e.g., left: 0;) */
+            width: 150px; /* Adjust size as needed */
+            height: auto;
+            max-width: 200px; /* Prevent logo from getting too big */
+        }
+        .details-table, .salary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .details-table th, .details-table td,
+        .salary-table th, .salary-table td {
+            border: 1px solid #eee;
+            padding: 8px;
+            text-align: left;
+        }
+        .salary-table th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: right; /* Align stamp/signature to right */
+        }
+        /* Styles for Stamp and Digital Signature */
+        .stamp-signature {
+            width: 150px; /* Adjust size as needed */
+            height: auto;
+            margin-bottom: 10px;
+            opacity: 0.8; /* Make stamp slightly transparent for a realistic look */
+            display: block; /* Ensures it takes up its own line */
+            margin-left: auto; /* Aligns to right within parent when display: block */
+        }
+        .digital-signature {
+            width: 180px; /* Adjust size as needed */
+            height: auto;
+            margin-top: 5px;
+            display: block; /* Ensures it takes up its own line */
+            margin-left: auto; /* Aligns to right within parent when display: block */
+        }
+        .signature-line {
+            text-align: right;
+            margin-top: 5px;
+            margin-right: 10px; /* Adjust if needed to align with signature */
+        }
+        /* More styling for net payable, etc. */
+        .net-payable {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <?php if (!empty($company_assets->company_logo_path)) : ?>
+                <img src="<?= base_url($company_assets->company_logo_path); ?>" alt="Company Logo" class="company-logo">
+            <?php endif; ?>
+            <h1>Bhavi Pvt Ltd</h1>
+            <p>Office Address, City, State, ZIP</p>
+            <p>Phone: (123) 456-7890 | Email: info@bhavipvt.com</p>
+            <h2>Payslip for <?= html_escape($month_name) ?> <?= html_escape($year) ?></h2>
+        </div>
 
-            <table class="employee-details">
-                <tr>
-                    <th colspan="2">Employee Details</th>
-                </tr>
-                <tr>
-                    <td>Employee Name:</td>
-                    <td><?php echo $employee_data['staff_name'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Designation:</td>
-                    <td><?php echo $employee_data['designation'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Department:</td>
-                    <td><?php echo $employee_data['department_name'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Employee ID:</td>
-                    <td><?php echo $employee_data['id'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Email:</td>
-                    <td><?php echo $employee_data['email'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Phone:</td>
-                    <td><?php echo $employee_data['phone'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Address:</td>
-                    <td><?php echo $employee_data['address'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Bank A/C No:</td>
-                    <td><?php echo $employee_data['bank_account_no'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>PAN/Aadhar No:</td>
-                    <td><?php echo $employee_data['pan_adhar_no'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Working Days in Month:</td>
-                    <td><?php echo $employee_data['working_days'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Days Worked:</td>
-                    <td><?php echo $employee_data['worked_days'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>No. of Leaves:</td>
-                    <td><?php echo $employee_data['no_of_leaves'] ?? ''; ?></td>
-                </tr>
-                <tr>
-                    <td>Login Days (Attendance):</td>
-                    <td><?php echo $employee_data['login_days'] ?? 'N/A'; ?></td>
-                </tr>
-            </table>
+        <h3>Employee Details:</h3>
+        <table class="details-table">
+            <tr>
+                <th>Employee ID:</th>
+                <td><?= html_escape($staff->employee_id ?? 'N/A') ?></td>
+                <th>Name:</th>
+                <td><?= html_escape($staff->staff_name ?? 'N/A') ?></td>
+            </tr>
+            <tr>
+                <th>Department:</th>
+                <td><?= html_escape($staff->department_name ?? 'N/A') ?></td>
+                <th>Designation:</th>
+                <td><?= html_escape($staff->designation ?? 'N/A') ?></td>
+            </tr>
+            <tr>
+                <th>Bank A/C No:</th>
+                <td><?= html_escape($staff->bank_account_no ?? 'N/A') ?></td>
+                <th>PAN/Aadhar No:</th>
+                <td><?= html_escape($staff->pan_adhar_no ?? 'N/A') ?></td>
+            </tr>
+        </table>
 
-            <table class="salary-details">
+        <h3>Salary Details:</h3>
+        <table class="salary-table">
+            <thead>
                 <tr>
                     <th>Earnings</th>
-                    <th>Amount (INR)</th>
+                    <th>Amount</th>
                     <th>Deductions</th>
-                    <th>Amount (INR)</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic Salary</td>
+                    <td><?= html_escape(number_format($salary->basic_salary ?? 0, 2)) ?></td>
+                    <td>Provident Fund (PF)</td>
+                    <td><?= html_escape(number_format($salary->pf ?? 0, 2)) ?></td>
                 </tr>
                 <tr>
-                    <td>Basic Salary:</td>
-                    <td><?php echo number_format($employee_data['basic_salary'] ?? 0, 2); ?></td>
-                    <td>Provident Fund (PF):</td>
-                    <td><?php echo number_format($employee_data['pf_deduction'] ?? 0, 2); ?></td>
+                    <td>House Rent Allowance (HRA)</td>
+                    <td><?= html_escape(number_format($salary->hra ?? 0, 2)) ?></td>
+                    <td>Professional Tax (PT)</td>
+                    <td><?= html_escape(number_format($salary->professional_tax ?? 0, 2)) ?></td>
                 </tr>
                 <tr>
-                    <td>Allowance:</td>
-                    <td><?php echo number_format($employee_data['allowance'] ?? 0, 2); ?></td>
-                    <td>ESI Deduction:</td>
-                    <td><?php echo number_format($employee_data['esi_deduction'] ?? 0, 2); ?></td>
+                    <td>Conveyance Allowance</td>
+                    <td><?= html_escape(number_format($salary->conveyance_allowance ?? 0, 2)) ?></td>
+                    <td>Income Tax (IT)</td>
+                    <td><?= html_escape(number_format($salary->income_tax ?? 0, 2)) ?></td>
                 </tr>
                 <tr>
-                    <td>Gross Salary:</td>
-                    <td><?php echo number_format($employee_data['gross_salary'] ?? 0, 2); ?></td>
-                    <td>Professional Tax:</td>
-                    <td><?php echo number_format($employee_data['professional_tax_deduction'] ?? 0, 2); ?></td>
+                    <td>Medical Allowance</td>
+                    <td><?= html_escape(number_format($salary->medical_allowance ?? 0, 2)) ?></td>
+                    <td>Loan/Advance Deduction</td>
+                    <td><?= html_escape(number_format($salary->loan_deduction ?? 0, 2)) ?></td>
                 </tr>
                 <tr>
-                    <td>Salary Per Day:</td>
-                    <td><?php echo number_format($employee_data['salary_per_day'] ?? 0, 2); ?></td>
-                    <td>TDS:</td>
-                    <td><?php echo number_format($employee_data['tds_deduction'] ?? 0, 2); ?></td>
+                    <td>Other Allowance</td>
+                    <td><?= html_escape(number_format($salary->other_allowance ?? 0, 2)) ?></td>
+                    <td>Other Deduction</td>
+                    <td><?= html_escape(number_format($salary->other_deduction ?? 0, 2)) ?></td>
                 </tr>
+                </tbody>
+            <tfoot>
                 <tr>
-                    <td>Total Earnings:</td>
-                    <td><?php echo number_format($employee_data['gross_salary'] ?? 0, 2); ?></td>
-                    <td>Other Deductions:</td>
-                    <td><?php echo number_format($employee_data['other_deductions'] ?? 0, 2); ?></td>
+                    <td><strong>Gross Earnings:</strong></td>
+                    <td><strong><?= html_escape(number_format($salary->gross_salary ?? 0, 2)) ?></strong></td>
+                    <td><strong>Total Deductions:</strong></td>
+                    <td><strong><?= html_escape(number_format($salary->total_deduction ?? 0, 2)) ?></strong></td>
                 </tr>
-                <tr class="total-row">
-                    <td></td>
-                    <td></td>
-                    <td>Total Deductions:</td>
-                    <td><?php echo number_format($employee_data['total_deductions'] ?? 0, 2); ?></td>
-                </tr>
-            </table>
+            </tfoot>
+        </table>
 
-            <table class="salary-summary">
-                <tr class="total-row">
-                    <th class="text-right">Net Pay:</th>
-                    <td class="text-right"><?php echo number_format($employee_data['net_payable_salary'] ?? 0, 2); ?></td>
-                </tr>
-                <tr>
-                    <th>Net Pay in Words:</th>
-                    <td><?php echo $net_pay_in_words; ?></td>
-                </tr>
-            </table>
+        <p class="net-payable"><strong>Net Payable Salary: <?= html_escape(number_format($salary->net_payable_salary ?? 0, 2)) ?></strong></p>
 
-            <div class="signatures">
-                <div class="signature-block">
-                    <?php if (!empty($authorized_signature_path)): ?>
-                        <img src="<?php echo base_url($authorized_signature_path); ?>" alt="Authorized Signature">
-                    <?php endif; ?>
-                    <p>Authorized Signature</p>
-                </div>
-                <div class="signature-block">
-                    <p>Employee Signature</p>
-                </div>
-            </div>
+        <p>Worked Days: <?= html_escape($salary->worked_days ?? 'N/A') ?></p>
+        <p>Actual Login Days: <?= html_escape($salary->actual_login_days ?? 'N/A') ?></p>
+        <p>Added Working Days: <?= html_escape($salary->added_working_days ?? 'N/A') ?></p>
 
-            <?php if (!empty($company_stamp_path)): ?>
-                <div class="stamp-section">
-                    <img src="<?php echo base_url($company_stamp_path); ?>" alt="Company Stamp">
-                </div>
+        <div class="footer">
+            <?php if (!empty($company_assets->company_stamp_path)) : ?>
+                <img src="<?= base_url($company_assets->company_stamp_path); ?>" alt="Company Stamp" class="stamp-signature">
             <?php endif; ?>
-
-            <div class="footer text-center">
-                <p>This is a computer generated payslip, no signature is required.</p>
-            </div>
+            <br>
+            <?php if (!empty($company_assets->digital_signature_path)) : ?>
+                <img src="<?= base_url($company_assets->digital_signature_path); ?>" alt="Digital Signature" class="digital-signature">
+            <?php endif; ?>
+            <p class="signature-line">_________________________</p>
+            <p class="signature-line">Authorized Signatory</p>
         </div>
-    </body>
-    </html> 
+
+        <p style="text-align: center; margin-top: 30px;">This is a computer generated payslip, hence no signature is required.</p>
+    </div>
+</body>
+</html>

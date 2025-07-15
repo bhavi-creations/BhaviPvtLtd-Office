@@ -49,4 +49,7 @@ class Products_model extends CI_Model {
         $this->db->update('products_tbl',$data);
         $this->db->affected_rows();
     }
+
+
+    
 }

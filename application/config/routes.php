@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -149,7 +149,7 @@ $route['print-invoice/(:num)'] = 'salary/invoice_print/$1';
 $route['delete-salary/(:num)'] = 'salary/delete/$1';
 $route['staff-salary-invoice/(:num)'] = 'salary/staff_invoice/$1';
 $route['staff-print-invoice/(:num)'] = 'salary/staff_invoice_print/$1';
-$route['salary/generate_payslip_pdf/(:num)/(:num)/(:num)'] = 'salary/generate_payslip_pdf/$1/$2/$3';  
+$route['salary/generate_payslip_pdf/(:num)/(:num)/(:num)'] = 'salary/generate_payslip_pdf/$1/$2/$3';
 
 
 $route['apply-leave'] = 'leave';
@@ -186,3 +186,13 @@ $route['view-worksheet/(:num)'] = 'Project_Tasks/view_worksheets/$1';
 //assign-clients
 $route['assign-clients'] = 'Assign_clients';
 $route['insert-asssign-client'] = 'Assign_clients/insert';
+
+
+
+// Client Advances routes
+$route['client_advances'] = 'client_advances';
+$route['client_advances/add'] = 'client_advances/add';
+$route['client_advances/view/(:num)'] = 'client_advances/view/$1';
+$route['client_advances/edit/(:num)'] = 'client_advances/edit/$1';
+$route['client_advances/delete/(:num)'] = 'client_advances/delete/$1';
+$route['client_advances/add_payment/(:num)'] = 'client_advances/add_payment/$1';

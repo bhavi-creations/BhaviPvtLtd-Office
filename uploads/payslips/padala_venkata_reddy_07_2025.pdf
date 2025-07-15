@@ -1,0 +1,187 @@
+<h1>Placeholder PDF Content</h1><!DOCTYPE html>
+<html>
+<head>
+    <title>Payslip - Padala Venkata Reddy - July 2025</title>
+    <style>
+        /* Basic styling for the payslip */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px; /* Adjust as needed for your PDF size */
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative; /* For logo positioning */
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        /* Style for Company Logo */
+        .company-logo {
+            position: absolute;
+            top: 0; /* Adjust vertical position */
+            right: 0; /* Adjust horizontal position (e.g., left: 0;) */
+            width: 150px; /* Adjust size as needed */
+            height: auto;
+            max-width: 200px; /* Prevent logo from getting too big */
+        }
+        .details-table, .salary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .details-table th, .details-table td,
+        .salary-table th, .salary-table td {
+            border: 1px solid #eee;
+            padding: 8px;
+            text-align: left;
+        }
+        .salary-table th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: right; /* Align stamp/signature to right */
+        }
+        /* Styles for Stamp and Digital Signature */
+        .stamp-signature {
+            width: 150px; /* Adjust size as needed */
+            height: auto;
+            margin-bottom: 10px;
+            opacity: 0.8; /* Make stamp slightly transparent for a realistic look */
+            display: block; /* Ensures it takes up its own line */
+            margin-left: auto; /* Aligns to right within parent when display: block */
+        }
+        .digital-signature {
+            width: 180px; /* Adjust size as needed */
+            height: auto;
+            margin-top: 5px;
+            display: block; /* Ensures it takes up its own line */
+            margin-left: auto; /* Aligns to right within parent when display: block */
+        }
+        .signature-line {
+            text-align: right;
+            margin-top: 5px;
+            margin-right: 10px; /* Adjust if needed to align with signature */
+        }
+        /* More styling for net payable, etc. */
+        .net-payable {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+                            <img src="http://localhost/BhaviPvtLtd-Office/uploads/company_assets/e64fc9d8e5c8288114a261d7d479f389.png" alt="Company Logo" class="company-logo">
+                        <h1>Bhavi Pvt Ltd</h1>
+            <p>Office Address, City, State, ZIP</p>
+            <p>Phone: (123) 456-7890 | Email: info@bhavipvt.com</p>
+            <h2>Payslip for July 2025</h2>
+        </div>
+
+        <h3>Employee Details:</h3>
+        <table class="details-table">
+            <tr>
+                <th>Employee ID:</th>
+                <td>BCPLKKD0004</td>
+                <th>Name:</th>
+                <td>Padala Venkata Reddy</td>
+            </tr>
+            <tr>
+                <th>Department:</th>
+                <td>SEO</td>
+                <th>Designation:</th>
+                <td>N/A</td>
+            </tr>
+            <tr>
+                <th>Bank A/C No:</th>
+                <td>N/A</td>
+                <th>PAN/Aadhar No:</th>
+                <td>N/A</td>
+            </tr>
+        </table>
+
+        <h3>Salary Details:</h3>
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th>Earnings</th>
+                    <th>Amount</th>
+                    <th>Deductions</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic Salary</td>
+                    <td>12,000.00</td>
+                    <td>Provident Fund (PF)</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>House Rent Allowance (HRA)</td>
+                    <td>0.00</td>
+                    <td>Professional Tax (PT)</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>Conveyance Allowance</td>
+                    <td>0.00</td>
+                    <td>Income Tax (IT)</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>Medical Allowance</td>
+                    <td>0.00</td>
+                    <td>Loan/Advance Deduction</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>Other Allowance</td>
+                    <td>0.00</td>
+                    <td>Other Deduction</td>
+                    <td>0.00</td>
+                </tr>
+                </tbody>
+            <tfoot>
+                <tr>
+                    <td><strong>Gross Earnings:</strong></td>
+                    <td><strong>12,000.00</strong></td>
+                    <td><strong>Total Deductions:</strong></td>
+                    <td><strong>0.00</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <p class="net-payable"><strong>Net Payable Salary: 12,000.00</strong></p>
+
+        <p>Worked Days: 11</p>
+        <p>Actual Login Days: 11</p>
+        <p>Added Working Days: 0</p>
+
+        <div class="footer">
+                            <img src="http://localhost/BhaviPvtLtd-Office/uploads/company_assets/d3c5ab3bf391765f9227f9d0e0925422.jpg" alt="Company Stamp" class="stamp-signature">
+                        <br>
+                            <img src="http://localhost/BhaviPvtLtd-Office/uploads/company_assets/cd51ddd83ce7e624a5a41cb9b3678043.png" alt="Digital Signature" class="digital-signature">
+                        <p class="signature-line">_________________________</p>
+            <p class="signature-line">Authorized Signatory</p>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">This is a computer generated payslip, hence no signature is required.</p>
+    </div>
+</body>
+</html>
