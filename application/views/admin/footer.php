@@ -62,8 +62,8 @@
 
         // console.log("Attendance Filter Debug:", { min, max, staffName, date, staff }); // Uncomment for debugging
         if (isNaN(date.getTime())) { // Check for Invalid Date
-            console.warn("Invalid Date for attendance row", dataIndex, ":", data[2]);
-            return false;
+          console.warn("Invalid Date for attendance row", dataIndex, ":", data[2]);
+          return false;
         }
 
         var passFilter = true;
@@ -127,33 +127,33 @@
 
         // Check for invalid dates that would break comparisons
         if (isNaN(rowDateObj.getTime())) {
-            // console.warn("Invalid row Paid On date for index", dataIndex, ":", paidOnDateString);
-            return false; // Exclude rows with invalid dates
+          // console.warn("Invalid row Paid On date for index", dataIndex, ":", paidOnDateString);
+          return false; // Exclude rows with invalid dates
         }
         if (min && isNaN(minDateObj.getTime())) {
-            // console.warn("Invalid min date input value:", min);
-            return false; // Exclude if min date input itself is invalid
+          // console.warn("Invalid min date input value:", min);
+          return false; // Exclude if min date input itself is invalid
         }
         if (max && isNaN(maxDateObj.getTime())) {
-            // console.warn("Invalid max date input value:", max);
-            return false; // Exclude if max date input itself is invalid
+          // console.warn("Invalid max date input value:", max);
+          return false; // Exclude if max date input itself is invalid
         }
 
         var passFilter = true; // Assume row passes filter by default
 
         // Apply Date Range Filter
         if (minDateObj && rowDateObj.getTime() < minDateObj.getTime()) {
-            passFilter = false;
+          passFilter = false;
         }
         if (maxDateObj && rowDateObj.getTime() > maxDateObj.getTime()) {
-            passFilter = false;
+          passFilter = false;
         }
 
         // Apply Staff Name Filter
         if (passFilter && staff != '') { // Only apply staff filter if date filter passes or no date filter
-            if (staffName.indexOf(staff) === -1) { // Check if staff name contains the filter text
-                passFilter = false;
-            }
+          if (staffName.indexOf(staff) === -1) { // Check if staff name contains the filter text
+            passFilter = false;
+          }
         }
         // console.log("Salary Filter Result for row", dataIndex, ":", passFilter); // Uncomment for debugging
         return passFilter;
@@ -177,8 +177,8 @@
         var date = new Date(staffDateIndexes[2], staffDateIndexes[1] - 1, staffDateIndexes[0]); // YYYY, MM-1, DD
 
         if (isNaN(date.getTime())) { // Check for Invalid Date
-            console.warn("Invalid Date for leave row", dataIndex, ":", data[5]);
-            return false;
+          console.warn("Invalid Date for leave row", dataIndex, ":", data[5]);
+          return false;
         }
 
         var passFilter = true;
@@ -220,10 +220,10 @@
         var date = new Date(staffDateIndexes[2], staffDateIndexes[1] - 1, staffDateIndexes[0]); // YYYY, MM-1, DD
 
         if (isNaN(date.getTime())) { // Check for Invalid Date
-            console.warn("Invalid Date for work_reports row", dataIndex, ":", data[6]);
-            return false;
+          console.warn("Invalid Date for work_reports row", dataIndex, ":", data[6]);
+          return false;
         }
-        
+
         var passFilter = true;
 
         if (min && !isNaN(min.getTime())) {
@@ -276,20 +276,20 @@
 
         // Check if staffDateIndexes is defined before creating Date object
         var date = null;
-        if(staffDateIndexes && staffDateIndexes.length === 3) {
-            date = new Date(staffDateIndexes[2], staffDateIndexes[1] - 1, staffDateIndexes[0]); // YYYY, MM-1, DD
+        if (staffDateIndexes && staffDateIndexes.length === 3) {
+          date = new Date(staffDateIndexes[2], staffDateIndexes[1] - 1, staffDateIndexes[0]); // YYYY, MM-1, DD
         }
 
         if (date === null || isNaN(date.getTime())) { // Check for Invalid Date
-            // console.warn("Invalid Date for project_tasks row", dataIndex, ":", (filter_by === 'due_date' ? data[6] : data[7]));
-            // If filter_by is not 'due_date' or 'completed_date', the date might be irrelevant
-            // If it's a valid filter type, exclude invalid dates.
-            if(filter_by === 'due_date' || filter_by === 'completed_date') {
-                return false;
-            } else {
-                // If filter_by is not date-based, pass (only apply staff filter)
-                date = new Date(); // Or some default valid date for comparisons not needing it
-            }
+          // console.warn("Invalid Date for project_tasks row", dataIndex, ":", (filter_by === 'due_date' ? data[6] : data[7]));
+          // If filter_by is not 'due_date' or 'completed_date', the date might be irrelevant
+          // If it's a valid filter type, exclude invalid dates.
+          if (filter_by === 'due_date' || filter_by === 'completed_date') {
+            return false;
+          } else {
+            // If filter_by is not date-based, pass (only apply staff filter)
+            date = new Date(); // Or some default valid date for comparisons not needing it
+          }
         }
 
         var passFilter = true;
@@ -317,13 +317,18 @@
     // --- DataTables Initializations (Defined ONCE) ---
 
     // Initialize DataTables for multiple tables with buttons
+    // Initialize DataTables for multiple tables with buttons
     $('#example1, #attendance, #salary, #leave, #work_reports, #project_tasks').DataTable({
-      dom: 'Bfrtip', // Enable buttons
+      dom: 'Bfrtip',
       buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print' // Added PDF and Print for common use
+        'copy', 'csv', 'excel', 'pdf', 'print'
       ],
-      // No 'retrieve: true' needed here as we consolidate init.
-      // No explicit 'columns' definition as we are reading from HTML directly.
+      // Add scrolling options specifically for #example1 if it's the primary table,
+      // otherwise consider applying them individually or checking if all these tables need scrolling.
+      // For now, applying generally as example1 usually implies main table.
+      "scrollX": true, // For horizontal scrolling
+      "scrollY": "400px", // For vertical scrolling
+      "scrollCollapse": true // Often recommended with scrollY
     });
 
     // Initialize example2 if it's a separate table

@@ -136,21 +136,4 @@
 
   
     
-  <script>
-  $(function () {
-    $('#example1').DataTable({
-        "scrollX": true, // For horizontal scrolling
-        "scrollY": "400px", // <--- ADD THIS LINE for vertical scrolling
-        "scrollCollapse": true // <--- ADD THIS LINE (Optional, but often recommended with scrollY)
-    })
-    
-    $('#example2').DataTable({
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : false,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false
-    })
-  })
-</script>
+   
