@@ -128,6 +128,10 @@ class Salary extends CI_Controller
     }
     public function insert()
     {
+
+        echo "<pre>";
+        var_dump($_POST); // Add this line
+        echo "</pre>";
         // Get the current month and year for this salary entry
         $current_month = date('m'); // e.g., '07' for July
         $current_year = date('Y');   // e.g., '2025'
@@ -184,6 +188,8 @@ class Salary extends CI_Controller
                         'actual_login_days'      => $employee_login_days_val, // NEW: Store actual login days separately
                         'added_working_days'     => $add_working_days_val,    // NEW: Store manually added working days separately
                         'payslip'                => '',
+                        'actual_login_days'      => $employee_login_days_val,
+                        'added_working_days'     => $add_working_days_val,
                         'no_of_leaves'           => $no_of_leaves_val,
                         'salary_per_day'         => $salary_per_day_val,
                         'total'                  => $total_val,
@@ -194,6 +200,7 @@ class Salary extends CI_Controller
                         'year'                   => (int)$current_year
                     );
 
+ 
                     $this->Salary_model->insert_salary($data);
                     $affected_rows_count += $this->db->affected_rows();
                 }

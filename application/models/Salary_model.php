@@ -39,6 +39,14 @@ class Salary_model extends CI_Model
         }
 
         $qry = $this->db->get();
+
+        // --- ADD THESE LINES FOR DEBUGGING ---
+        // echo "<pre>Last Query: " . $this->db->last_query() . "</pre>";
+        // echo "<pre>Query Results: ";
+        // var_dump($qry->result_array());
+        // echo "</pre>";
+        // -------------------------------------
+
         if ($qry->num_rows() > 0) {
             return $qry->result_array();
         }
