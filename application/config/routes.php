@@ -9,6 +9,8 @@ $route['translate_uri_dashes'] = FALSE;
 $route['login'] = 'home/login_page';
 $route['logout'] = 'home/logout';
 
+$route['change-password'] = 'home/change_password';
+
 // department routes
 $route['add-department'] = 'department';
 $route['insert-department'] = 'department/insert';
@@ -154,12 +156,8 @@ $route['client_advances/add_payment/(:num)'] = 'client_advances/add_payment/$1';
 
 
 
-
-
-
-
-
-
-
 $route['my-payslips'] = 'salary/my_payslips';
 $route['salary/download_my_payslip/(:num)'] = 'salary/download_my_payslip/$1';
+
+
+

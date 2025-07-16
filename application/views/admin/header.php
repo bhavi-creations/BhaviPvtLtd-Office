@@ -268,6 +268,7 @@
             </a>
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url('Company_settings'); ?>"><i class="fa fa-circle-o"></i> Company Assets</a></li>
+              <li><a href="<?php echo base_url('change-password'); ?>"><i class="fa fa-circle-o"></i> Change Password</a></li>
             </ul>
           </li>
 
