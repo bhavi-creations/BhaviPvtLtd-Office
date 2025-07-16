@@ -84,6 +84,17 @@ class Salary_model extends CI_Model
         return [];
     }
 
+       function select_staff_byID($id)
+    {
+        $this->db->where('id', $id); // Assuming the primary key column for staff is 'id'
+        $qry = $this->db->get('staff_tbl');
+        if ($qry->num_rows() > 0) {
+            $result = $qry->result_array(); // Return as array of associative arrays
+            return $result;
+        }
+        return [];
+    }
+
     function select_staff_byEmail($email)
     {
         $this->db->where('email', $email);
@@ -273,26 +284,26 @@ class Salary_model extends CI_Model
         return $result['login_days'] ?? 0;
     }
 
-   public function get_staff_salary_details_for_payslip($staff_id, $pay_month, $pay_year)
-{
-    $this->db->select('s.*, st.staff_name, st.email, st.mobile as phone, st.address, st.employee_id as staff_employee_id, dt.department_name as department_name'); // <<< CHANGED HERE: dt.dept_name to dt.department_name
-    // Add placeholders for designation, bank_account_no, pan_adhar_no if they are not in staff_tbl or other joined tables
-    $this->db->select("'' as designation, '' as bank_account_no, '' as pan_adhar_no");
+    public function get_staff_salary_details_for_payslip($staff_id, $pay_month, $pay_year)
+    {
+        $this->db->select('s.*, st.staff_name, st.email, st.mobile as phone, st.address, st.employee_id as staff_employee_id, dt.department_name as department_name'); // <<< CHANGED HERE: dt.dept_name to dt.department_name
+        // Add placeholders for designation, bank_account_no, pan_adhar_no if they are not in staff_tbl or other joined tables
+        $this->db->select("'' as designation, '' as bank_account_no, '' as pan_adhar_no");
 
-    $this->db->from('salary_tbl s');
-    $this->db->join('staff_tbl st', 'st.id = s.staff_id');
-    $this->db->join('department_tbl dt', 'dt.id = st.department_id', 'left');
+        $this->db->from('salary_tbl s');
+        $this->db->join('staff_tbl st', 'st.id = s.staff_id');
+        $this->db->join('department_tbl dt', 'dt.id = st.department_id', 'left');
 
-    $this->db->where('s.staff_id', $staff_id);
-    $this->db->where('s.month', $pay_month);
-    $this->db->where('s.year', $pay_year);
-    $query = $this->db->get();
+        $this->db->where('s.staff_id', $staff_id);
+        $this->db->where('s.month', $pay_month);
+        $this->db->where('s.year', $pay_year);
+        $query = $this->db->get();
 
-    if ($query->num_rows() > 0) {
-        return $query->row_array();
+        if ($query->num_rows() > 0) {
+            return $query->row_array();
+        }
+        return null;
     }
-    return null;
-}
 
     // You might also need a method to update the payslip_pdf_path
     public function update_payslip_path($salary_id, $file_path)
@@ -333,7 +344,7 @@ class Salary_model extends CI_Model
     }
 
 
-      public function get_all_payslip_details()
+    public function get_all_payslip_details()
     {
         $this->db->select('s.id as salary_id, s.payslip_pdf_path, s.month, s.year, st.staff_name, st.employee_id');
         $this->db->from('salary_tbl s');
@@ -354,33 +365,69 @@ class Salary_model extends CI_Model
 
 
 
-       public function get_payslip_path_by_salary_id($salary_id)
+    // public function get_payslip_path_by_salary_id($salary_id)
+    // {
+    //     $this->db->select('payslip_pdf_path');
+    //     $this->db->where('id', $salary_id);
+    //     $query = $this->db->get('salary_tbl');  
+
+    //     if ($query->num_rows() > 0) {
+    //         $row = $query->row();
+    //         return $row->payslip_pdf_path;
+    //     }
+    //     return null;
+    // }
+
+
+
+    public function get_payslip_path_by_salary_id($salary_id)
     {
-        $this->db->select('payslip_pdf_path');
+        $this->db->select('payslip_pdf_path, staff_id');
+        $this->db->from('salary_tbl');
         $this->db->where('id', $salary_id);
-        $query = $this->db->get('salary_tbl'); // Assuming your salary table is 'salary_tbl'
+        $query = $this->db->get();
+        return $query->row(); // Returns a single object or NULL
+    }
+
+    public function get_salary_month_year($salary_id)
+    {
+        $this->db->select('month, year');
+        $this->db->from('salary_tbl');
+        $this->db->where('id', $salary_id);
+        $query = $this->db->get();
+        return $query->row(); // Returns a single object (e.g., $obj->month, $obj->year) or NULL
+    }
+    public function get_staff_payslips($staff_id)
+    {
+        $this->db->select('s.id as salary_id, s.payslip_pdf_path, s.month, s.year, st.staff_name, st.employee_id');
+        $this->db->from('salary_tbl s');
+        $this->db->join('staff_tbl st', 'st.id = s.staff_id');
+        $this->db->where('s.staff_id', $staff_id); // Filter by the specific staff_id
+        $this->db->where('s.payslip_pdf_path IS NOT NULL'); // Only get records with a payslip
+        $this->db->where('s.payslip_pdf_path != ""'); // And not empty string
+        $this->db->order_by('s.year', 'DESC');
+        $this->db->order_by('s.month', 'DESC');
+        $this->db->order_by('st.staff_name', 'ASC'); // Optional: keep for consistency
+
+        $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
-            $row = $query->row();
-            return $row->payslip_pdf_path;
+            return $query->result_array();
         }
-        return null;
+        return []; // Return empty array if no payslips found
     }
 
 
 
 
 
-
-
-
-
-    public function get_latest_salary_record_for_testing() {
-    $this->db->select('staff_id, month, year');
-    $this->db->from('salary_tbl');
-    $this->db->order_by('id', 'DESC');
-    $this->db->limit(1);
-    $query = $this->db->get();
-    return $query->row(); // Return a single row object
-}
+    public function get_latest_salary_record_for_testing()
+    {
+        $this->db->select('staff_id, month, year');
+        $this->db->from('salary_tbl');
+        $this->db->order_by('id', 'DESC');
+        $this->db->limit(1);
+        $query = $this->db->get();
+        return $query->row(); // Return a single row object
+    }
 }

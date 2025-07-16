@@ -13,9 +13,104 @@ class Salary extends CI_Controller
             redirect(base_url() . 'login');
         }
         $this->load->model('Salary_model');
-        $this->load->model('Staff_model');    // Make sure Staff_model is loaded if Payslip_model uses it
-        $this->load->model('Payslip_model');  // <<< NEW: Load the Payslip_model here
-        // Load any other models or helpers needed by this controller
+        $this->load->model('Staff_model');
+        $this->load->model('Payslip_model');
+        // $this->load->model('Company_model');
+        $this->load->model('Company_settings_model');
+        $this->load->helper('download');
+        $this->load->helper('file');
+    }
+
+    public function my_payslips()
+    {
+        // Ensure only staff (usertype 2) can access this
+        if ($this->session->userdata('usertype') != 2) {
+            $this->session->set_flashdata('error', 'Access denied. You are not authorized to view this page.');
+            redirect(base_url()); // Redirect to main dashboard or admin page
+        }
+
+        $staff_id = $this->session->userdata('userid'); // Get the logged-in staff's ID
+
+        if (empty($staff_id)) {
+            $this->session->set_flashdata('error', 'Your session has expired or employee ID is missing. Please log in again.');
+            redirect(base_url() . 'login');
+            return;
+        }
+
+        $data['payslips'] = $this->Salary_model->get_staff_payslips($staff_id);
+
+        $this->load->view('staff/header');
+        $this->load->view('staff/my_payslips', $data);
+        $this->load->view('staff/footer');
+    }
+
+    /**
+     * Securely download a payslip for the currently logged-in staff member.
+     * @param int $salary_id The ID of the salary record (which has the payslip path).
+     */
+    public function download_my_payslip($salary_id)
+    {
+        // Ensure only staff (usertype 2) can access this
+        if ($this->session->userdata('usertype') != 2) {
+            show_error('Access denied. You are not authorized to download this file.', 403);
+            return;
+        }
+
+        $logged_in_staff_id = $this->session->userdata('userid'); // Get the logged-in staff's ID
+
+        if (empty($logged_in_staff_id)) {
+            show_error('Unauthorized access. Employee ID not found in session.', 403);
+            return;
+        }
+
+        // 1. Get payslip path AND staff_id from the database using salary_id (from Salary_model)
+        $payslip_meta_data = $this->Salary_model->get_payslip_path_by_salary_id($salary_id);
+
+        if ($payslip_meta_data) {
+            // CRUCIAL SECURITY CHECK: Verify that the payslip belongs to the logged-in employee
+            if ($payslip_meta_data->staff_id != $logged_in_staff_id) {
+                log_message('error', 'Attempted unauthorized payslip download. Salary ID: ' . $salary_id . ', Logged-in Staff ID: ' . $logged_in_staff_id . ', Payslip Staff ID: ' . $payslip_meta_data->staff_id);
+                show_error('Access denied. This payslip does not belong to your account.', 403);
+                return;
+            }
+
+            $full_file_path = FCPATH . $payslip_meta_data->payslip_pdf_path;
+
+            if (file_exists($full_file_path)) {
+                // 2. Get month and year from salary_tbl for the filename
+                $salary_date_info = $this->Salary_model->get_salary_month_year($salary_id);
+
+                // 3. Get staff details for the name using the new method
+                $staff_details = $this->Staff_model->select_staff_byID($payslip_meta_data->staff_id);
+
+                $staff_name_for_file = 'Employee'; // Default if name not found
+                $month_name_for_file = 'Month';
+                $year_for_file = 'Year';
+
+                // Adjusted access: Check if $staff_details is not empty AND if the 'staff_name' key exists in the first element
+                if (!empty($staff_details) && isset($staff_details[0]['staff_name'])) {
+                    // Access using associative array key
+                    $staff_name_for_file = str_replace(' ', '_', strtolower($staff_details[0]['staff_name']));
+                }
+
+                if ($salary_date_info) {
+                    $month_name_for_file = date('F', mktime(0, 0, 0, $salary_date_info->month, 1));
+                    $year_for_file = $salary_date_info->year;
+                }
+
+                $download_filename = "{$staff_name_for_file}_{$month_name_for_file}_{$year_for_file}_Payslip.pdf";
+
+                force_download($download_filename, file_get_contents($full_file_path));
+            } else {
+                log_message('error', 'Employee Payslip download failed: File not found at ' . $full_file_path . ' for Salary ID: ' . $salary_id);
+                $this->session->set_flashdata('error', 'Payslip file not found. Please contact support.');
+                redirect(base_url('salary/my_payslips'));
+            }
+        } else {
+            log_message('error', 'Employee Payslip download failed: No record found for Salary ID ' . $salary_id);
+            $this->session->set_flashdata('error', 'Invalid payslip record or record not found.');
+            redirect(base_url('salary/my_payslips'));
+        }
     }
 
 
@@ -405,30 +500,36 @@ class Salary extends CI_Controller
         $this->load->helper('download');
         $this->load->helper('file');
 
-        $payslip_relative_path = $this->Salary_model->get_payslip_path_by_salary_id($salary_id);
+        // IMPORTANT CHANGE: Now get_payslip_path_by_salary_id returns an object.
+        // Let's rename the variable to reflect that it's data, not just a path.
+        $payslip_data_object = $this->Salary_model->get_payslip_path_by_salary_id($salary_id);
 
-        if ($payslip_relative_path) {
+        // Check if an object was returned AND if it contains the path property
+        if ($payslip_data_object && isset($payslip_data_object->payslip_pdf_path)) {
+
+            // Now, extract the actual path string from the object
+            $payslip_relative_path = $payslip_data_object->payslip_pdf_path;
             $full_file_path = FCPATH . $payslip_relative_path;
 
-            // --- ADD THESE DEBUG LINES ---
+            // --- DEBUG LINES (OPTIONAL: You can remove these after it's working) ---
             log_message('debug', 'Attempting to view payslip. Salary ID: ' . $salary_id);
-            log_message('debug', 'Relative Path from DB: ' . $payslip_relative_path);
+            log_message('debug', 'Relative Path from DB: ' . $payslip_relative_path); // This line is now fixed
             log_message('debug', 'Full Server Path: ' . $full_file_path);
             log_message('debug', 'File exists: ' . (file_exists($full_file_path) ? 'TRUE' : 'FALSE'));
             // --- END DEBUG LINES ---
 
             if (file_exists($full_file_path)) {
+                // force_download will read the file from $full_file_path
                 force_download($full_file_path, NULL);
             } else {
                 log_message('error', 'Payslip file not found on server: ' . $full_file_path);
                 show_error('Payslip file not found. It may have been moved or deleted.', 404);
             }
         } else {
-            log_message('error', 'Payslip path not found in database for salary ID: ' . $salary_id);
+            log_message('error', 'Payslip path or data not found in database for salary ID: ' . $salary_id);
             show_error('Payslip not found for this record.', 404);
         }
     }
-
 
 
 
