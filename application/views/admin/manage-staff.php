@@ -1,6 +1,4 @@
-<!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+<div class="content-wrapper">
     <section class="content-header">
       <h1>
         Staff
@@ -12,7 +10,6 @@
       </ol>
     </section>
 
-    <!-- Main content -->
     <section class="content">
       <div class="row">
 
@@ -39,7 +36,6 @@
             <div class="box-header">
               <h3 class="box-title">Manage Staff</h3>
             </div>
-            <!-- /.box-header -->
             <div class="box-body">
               <div class="table-responsive">
                 <table id="example1" class="table table-bordered table-striped">
@@ -51,6 +47,11 @@
                     <th>Pic</th>
                     <th>Files</th>
                     <th>Department</th>
+                    <th>Designation</th>
+                    <th>Bank Name</th>
+                    <th>Bank Account No</th>
+                    <th>IFSC Code</th>
+                    <th>PAN/Aadhar No</th>
                     <th>Gender</th>
                     <th>Mobile</th>
                     <th>Email</th>
@@ -60,7 +61,7 @@
                     <th>City</th>
                     <th>State</th>
                     <th>Country</th>
-                        <th>Salary</th>
+                    <th>Salary</th>
                     <th>Actions</th>
                   </tr>
                   </thead>
@@ -71,7 +72,7 @@
                     foreach($content as $cnt): 
                       // to stop displaying admin
                       if($cnt['id']!=1){
-                  ?>
+                    ?>
                       <tr>
                         <td><?php echo $i; ?></td>
                         <td><?php echo $cnt['employee_id']; ?></td>
@@ -94,6 +95,11 @@
                           ?>
                         </td>
                         <td><?php echo $cnt['department_name']; ?></td>
+                        <td><?php echo $cnt['designation']; ?></td>
+                        <td><?php echo $cnt['bank_name']; ?></td>
+                        <td><?php echo $cnt['bank_account_no']; ?></td>
+                        <td><?php echo $cnt['ifsc_code']; ?></td>
+                        <td><?php echo $cnt['pan_adhar_no']; ?></td>
                         <td><?php echo $cnt['gender']; ?></td>
                         <td><?php echo $cnt['mobile']; ?></td>
                         <td><?php echo $cnt['email']; ?></td>
@@ -121,19 +127,8 @@
                 </table>
               </div>
             </div>
-            <!-- /.box-body -->
+            </div>
           </div>
-          <!-- /.box -->
         </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-
-
-  
-    
-   
+      </section>
+    </div>

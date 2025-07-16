@@ -13,14 +13,7 @@ class Payslip_model extends CI_Model {
         $this->load->helper('url');
     }
 
-    /**
-     * Generates and saves a payslip PDF for a given staff member, month, and year.
-     *
-     * @param int $staff_id The ID of the staff member.
-     * @param int $month The month for which the payslip is generated (e.g., 01 for January).
-     * @param int $year The year for which the payslip is generated (e.g., 2023).
-     * @return string|bool The filename of the saved PDF file on success, or false on failure.
-     */
+    
     public function generate_and_save_payslip_pdf($staff_id, $month, $year) {
         $staff_details = $this->Staff_model->select_staff_byID($staff_id);
         $salary_data = $this->Salary_model->get_staff_salary_details_for_payslip($staff_id, $month, $year);
@@ -58,7 +51,7 @@ class Payslip_model extends CI_Model {
             $this->pdf_lib->generatePdfFromHtml($html_content, $full_path);
 
             if (file_exists($full_path)) {
-                return $file_name;
+                return 'uploads/payslips/' . $file_name;
             } else {
                 log_message('error', 'Payslip PDF file not created at: ' . $full_path);
                 return false;

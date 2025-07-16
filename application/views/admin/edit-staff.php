@@ -1,13 +1,11 @@
-  <style>
+<style>
     .floatybox {
       display: inline-block;
       width: 123px;
     }
   </style>
 
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
         Staff Management
@@ -19,7 +17,6 @@
       </ol>
     </section>
 
-    <!-- Main content -->
     <section class="content">
       <div class="row">
 
@@ -47,18 +44,13 @@
           </div>
         <?php endif; ?>
 
-        <!-- column -->
         <div class="col-md-12">
-          <!-- general form elements -->
           <div class="box box-info">
             <div class="box-header with-border">
               <h3 class="box-title">Edit Staff</h3>
             </div>
-            <!-- /.box-header -->
-
             <?php if (isset($content)): ?>
               <?php foreach ($content as $cnt): ?>
-                <!-- form start -->
                 <?php echo form_open_multipart('Staff/update'); ?>
                 <div class="box-body">
 
@@ -108,26 +100,60 @@
 
                   <div class="col-md-6">
                     <div class="form-group">
+                      <label>Designation</label>
+                      <input type="text" name="txtdesignation" value="<?php echo $cnt['designation']; ?>" class="form-control" placeholder="Designation">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Bank Name</label>
+                      <input type="text" name="txtbank_name" value="<?php echo $cnt['bank_name']; ?>" class="form-control" placeholder="Bank Name">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Bank Account Number</label>
+                      <input type="text" name="txtbank_account_no" value="<?php echo $cnt['bank_account_no']; ?>" class="form-control" placeholder="Bank Account Number">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>IFSC Code</label>
+                      <input type="text" name="txtifsc_code" value="<?php echo $cnt['ifsc_code']; ?>" class="form-control" placeholder="IFSC Code">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>PAN/Aadhar Number</label>
+                      <input type="text" name="txtpan_adhar_no" value="<?php echo $cnt['pan_adhar_no']; ?>" class="form-control" placeholder="PAN/Aadhar Number">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
                       <label>Gender</label>
                       <select class="form-control selectpicker" data-live-search="true" name="slcgender">
                         <option value="">Select</option>
                         <?php
                         if ($cnt['gender'] == 'Male') {
                           print '<option value="Male" selected>Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Others">Others</option>';
-                        } elseif ($cnt['gender'] == 'Femle') {
+                                        <option value="Female">Female</option>
+                                        <option value="Others">Others</option>';
+                        } elseif ($cnt['gender'] == 'Female') { // Corrected "Femle" to "Female"
                           print '<option value="Male">Male</option>
-                                    <option value="Female" selected>Female</option>
-                                    <option value="Others">Others</option>';
+                                        <option value="Female" selected>Female</option>
+                                        <option value="Others">Others</option>';
                         } elseif ($cnt['gender'] == 'Others') {
                           print '<option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Others" selected>Others</option>';
+                                        <option value="Female">Female</option>
+                                        <option value="Others" selected>Others</option>';
                         } else {
                           print '<option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                              <option value="Others">Others</option>';
+                                    <option value="Female">Female</option>
+                                    <option value="Others">Others</option>';
                         }
                         ?>
                       </select>
@@ -244,16 +270,16 @@
                           }
                           if ($value != '') {
                             echo '
-                                      <div class"d-flex" style="margin:10px">
-                                      <a href="' . base_url() . 'uploads/staff-files/' . $value . '" download>
-                                      ' . $filename['1'] . '
-                                      </a>
-                                      <a class="label label-danger" style="margin-left:20px" href="' . base_url() . 'delete-staff-file/' . $cnt['id'] . '/' . $value . '">
-                                      Delete
-                                      </a>
-                                      <br>
-                                      </div>
-                                    ';
+                                          <div class"d-flex" style="margin:10px">
+                                          <a href="' . base_url() . 'uploads/staff-files/' . $value . '" download>
+                                          ' . $filename['1'] . '
+                                          </a>
+                                          <a class="label label-danger" style="margin-left:20px" href="' . base_url() . 'delete-staff-file/' . $cnt['id'] . '/' . $value . '">
+                                          Delete
+                                          </a>
+                                          <br>
+                                          </div>
+                                        ';
                           }
                         }
                       } else {
@@ -264,7 +290,6 @@
                   </div>
 
                 </div>
-                <!-- /.box-body -->
                 <div class="box-footer">
                   <button type="submit" class="btn btn-info pull-right">Submit</button>
                 </div>
@@ -272,15 +297,10 @@
               <?php endforeach; ?>
             <?php endif; ?>
           </div>
-          <!-- /.box -->
-
-          <!-- general form elements -->
           <div class="box box-info">
             <div class="box-header with-border">
               <h3 class="box-title">Edit Staff Permissions</h3>
             </div>
-            <!-- /.box-header -->
-
             <?php if (isset($content)): ?>
               <?php foreach ($content as $cnt): ?>
                 <?php
@@ -290,7 +310,6 @@
                   $permission = 'no_access';
                 }
                 ?>
-                <!-- form start -->
                 <?php echo form_open_multipart('Staff/update_staff_permissions'); ?>
                 <div class="box-body">
 
@@ -309,8 +328,8 @@
                       <label>Permission</label>
                       <select class="form-control selectpicker" data-live-search="true" name="permission">
                         <option value="no_access" <?php if ($permission == 'no_access') {
-                                                    echo "selected";
-                                                  } ?>>No Access</option>
+                                                      echo "selected";
+                                                    } ?>>No Access</option>
                         <option value="view_access" <?php if ($permission == 'view_access') {
                                                       echo "selected";
                                                     } ?>>View Access</option>
@@ -322,7 +341,6 @@
                   </div>
 
                 </div>
-                <!-- /.box-body -->
                 <div class="box-footer">
                   <button type="submit" class="btn btn-info pull-right">Submit</button>
                 </div>
@@ -330,12 +348,7 @@
               <?php endforeach; ?>
             <?php endif; ?>
           </div>
-          <!-- /.box -->
+          </div>
         </div>
-        <!--/.col (left) -->
-      </div>
-      <!-- /.row -->
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+      </section>
+    </div>

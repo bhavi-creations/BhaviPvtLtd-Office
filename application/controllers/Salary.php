@@ -28,55 +28,53 @@ class Salary extends CI_Controller
 
         if (empty($employee_salary_data)) {
             // Handle case where no salary data is found for the given month/employee
-            $this->session->set_flashdata('error', 'Salary data not found for the specified employee and month.');
-            redirect(base_url('admin/salary_management')); // Redirect back to a relevant page
-            return;
+            $this->session->set_flashdata('error', 'Salary data not found for the selected employee and month/year.');
+            redirect(base_url('salary/manage_payslips')); // Redirect back to a relevant page
         }
 
-        // Get login days for attendance summary
-        $login_days = $this->Salary_model->get_employee_login_days($staff_id, $pay_year, $pay_month);
-        $employee_salary_data['login_days'] = $login_days; // Add to data array
+        // Assuming $employee_salary_data contains $staff and $salary objects/arrays
+        $data['staff'] = $employee_salary_data['staff'];
+        $data['salary'] = $employee_salary_data['salary'];
+        $data['month_name'] = date('F', mktime(0, 0, 0, $pay_month, 10)); // Convert month number to name
+        $data['year'] = $pay_year;
 
-        // --- 2. Fetch Company Assets (Logo, Signature, Stamp Paths) ---
-        // Assuming your Company_assets_model has methods like get_asset_by_type()
-        // Ensure your database has entries for 'logo', 'signature', 'stamp' with their file paths.
-        $company_logo = $this->Company_assets_model->get_asset_by_type('logo');
-        $authorized_signature = $this->Company_assets_model->get_asset_by_type('signature');
-        $company_stamp = $this->Company_assets_model->get_asset_by_type('stamp');
+        // Fetch company assets (logo, stamp, signature) - assuming this is in a model like Settings_model or Company_model
+        $this->load->model('Company_model'); // Load your Company_model or equivalent
+        $data['company_assets'] = $this->Company_model->get_company_assets(); // Fetch paths for logo, stamp, signature
 
-        $data['company_logo_path'] = $company_logo ? $company_logo['file_path'] : ''; // Adjust 'file_path' to your column name
-        $data['authorized_signature_path'] = $authorized_signature ? $authorized_signature['file_path'] : '';
-        $data['company_stamp_path'] = $company_stamp ? $company_stamp['file_path'] : '';
+        // --- DEBUGGING IMAGE PATHS ---
+        log_message('debug', 'Company Logo Path: ' . ($data['company_assets']->company_logo_path ?? 'Not Set'));
+        log_message('debug', 'Company Stamp Path: ' . ($data['company_assets']->company_stamp_path ?? 'Not Set'));
+        log_message('debug', 'Digital Signature Path: ' . ($data['company_assets']->digital_signature_path ?? 'Not Set'));
+        // --- END DEBUGGING IMAGE PATHS ---
 
-        // --- 3. Prepare Data for the Payslip Template ---
-        $data['employee_data'] = $employee_salary_data;
-        $data['pay_month'] = date('F', mktime(0, 0, 0, $pay_month, 10)); // Convert month number to name (e.g., 7 -> July)
-        $data['pay_year'] = $pay_year;
 
-        // Optional: Calculate Net Pay in Words (you'll need a helper function for this)
-        // Example: $this->load->helper('number_to_words_helper');
-        // $data['net_pay_in_words'] = number_to_words($employee_salary_data['total']);
-        $data['net_pay_in_words'] = 'N/A'; // Placeholder if no helper yet
+        // --- 2. Load the HTML content for the payslip ---
+        $html_payslip = $this->load->view('admin/payslip_template', $data, true); // true makes it return content, not display it
 
-        // --- 4. Load the HTML Content from the View ---
-        // This will render the HTML template with all the data
-        $html = $this->load->view('admin/payslip_template', $data, true);
+        // --- 3. Generate PDF using Payslip_model ---
+        $file_name = 'payslip_' . $data['staff']->employee_id . '_' . $pay_month . '_' . $pay_year . '.pdf';
+        $save_path = 'uploads/payslips/' . $file_name; // Path relative to FCPATH
 
-        // --- 5. Initialize Dompdf ---
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($html);
+        // Ensure the directory exists
+        if (!is_dir(FCPATH . 'uploads/payslips')) {
+            mkdir(FCPATH . 'uploads/payslips', 0777, true); // Create directory with write permissions
+        }
 
-        // (Optional) Set paper size and orientation
-        $dompdf->setPaper('A4', 'portrait');
+        // Generate and save PDF using the Payslip_model method
+        $pdf_generated = $this->Payslip_model->generate_and_save_payslip_pdf($html_payslip, $save_path);
 
-        // Render the HTML as PDF
-        $dompdf->render();
 
-        // --- 6. Output the Generated PDF ---
-        $file_name = 'Payslip_' . $employee_salary_data['staff_name'] . '_' . $data['pay_month'] . '_' . $data['pay_year'] . '.pdf';
+        if ($pdf_generated) {
+            // --- 4. Update the salary_tbl with the payslip path ---
+            $this->Salary_model->update_salary_payslip_path($data['salary']->id, $save_path); // Assuming $data['salary']->id is the salary record ID
 
-        // Stream the PDF to the browser for viewing/download
-        $dompdf->stream($file_name, array("Attachment" => 0)); // 0 = View in browser, 1 = Force download
+            $this->session->set_flashdata('success', 'Payslip generated and saved successfully!');
+            redirect(base_url('salary/manage_payslips')); // Redirect to the payslip list
+        } else {
+            $this->session->set_flashdata('error', 'Failed to generate payslip PDF.');
+            redirect(base_url('salary/manage_payslips'));
+        }
     }
 
     public function index()
@@ -399,35 +397,92 @@ class Salary extends CI_Controller
     }
 
     public function view_payslip($salary_id)
-{
-    if (! $this->session->userdata('logged_in')) {
-        redirect(base_url() . 'login');
-    }
-
-    $this->load->helper('download');
-    $this->load->helper('file');
-
-    $payslip_relative_path = $this->Salary_model->get_payslip_path_by_salary_id($salary_id);
-
-    if ($payslip_relative_path) {
-        $full_file_path = FCPATH . $payslip_relative_path;
-
-        // --- ADD THESE DEBUG LINES ---
-        log_message('debug', 'Attempting to view payslip. Salary ID: ' . $salary_id);
-        log_message('debug', 'Relative Path from DB: ' . $payslip_relative_path);
-        log_message('debug', 'Full Server Path: ' . $full_file_path);
-        log_message('debug', 'File exists: ' . (file_exists($full_file_path) ? 'TRUE' : 'FALSE'));
-        // --- END DEBUG LINES ---
-
-        if (file_exists($full_file_path)) {
-            force_download($full_file_path, NULL);
-        } else {
-            log_message('error', 'Payslip file not found on server: ' . $full_file_path);
-            show_error('Payslip file not found. It may have been moved or deleted.', 404);
+    {
+        if (! $this->session->userdata('logged_in')) {
+            redirect(base_url() . 'login');
         }
-    } else {
-        log_message('error', 'Payslip path not found in database for salary ID: ' . $salary_id);
-        show_error('Payslip not found for this record.', 404);
+
+        $this->load->helper('download');
+        $this->load->helper('file');
+
+        $payslip_relative_path = $this->Salary_model->get_payslip_path_by_salary_id($salary_id);
+
+        if ($payslip_relative_path) {
+            $full_file_path = FCPATH . $payslip_relative_path;
+
+            // --- ADD THESE DEBUG LINES ---
+            log_message('debug', 'Attempting to view payslip. Salary ID: ' . $salary_id);
+            log_message('debug', 'Relative Path from DB: ' . $payslip_relative_path);
+            log_message('debug', 'Full Server Path: ' . $full_file_path);
+            log_message('debug', 'File exists: ' . (file_exists($full_file_path) ? 'TRUE' : 'FALSE'));
+            // --- END DEBUG LINES ---
+
+            if (file_exists($full_file_path)) {
+                force_download($full_file_path, NULL);
+            } else {
+                log_message('error', 'Payslip file not found on server: ' . $full_file_path);
+                show_error('Payslip file not found. It may have been moved or deleted.', 404);
+            }
+        } else {
+            log_message('error', 'Payslip path not found in database for salary ID: ' . $salary_id);
+            show_error('Payslip not found for this record.', 404);
+        }
     }
+
+
+
+
+
+
+
+
+
+    public function test_payslip_view($staff_id = null, $month = null, $year = null)
+    {
+        if (! $this->session->userdata('logged_in')) {
+            redirect(base_url() . 'login');
+        }
+
+        // You'll need to provide actual data here to see a realistic output.
+        // Replace with actual IDs/month/year from your database for a staff member that has salary data.
+        // Example:
+        if ($staff_id === null) {
+            // Fetch a sample staff_id, month, year from your database
+            // For example, get the latest salary record
+            $sample_salary_data = $this->Salary_model->get_latest_salary_record_for_testing(); // You might need to add this method to your Salary_model
+            if ($sample_salary_data) {
+                $staff_id = $sample_salary_data->staff_id;
+                $month = $sample_salary_data->month;
+                $year = $sample_salary_data->year;
+            } else {
+                echo "No sample salary data found. Please provide staff_id, month, year in the URL or populate your database.";
+                return;
+            }
+        }
+
+
+        $staff_details = $this->Staff_model->select_staff_byID($staff_id);
+        $salary_data = $this->Salary_model->get_staff_salary_details_for_payslip($staff_id, $month, $year);
+
+        // Assuming Company_settings_model is the one for company assets
+        $company_assets = $this->Company_settings_model->get_company_assets(TRUE);
+
+
+        if (!$staff_details || !$salary_data) {
+            echo "Error: Staff or Salary data not found for the provided parameters. Check your database or URL.";
+            return;
+        }
+
+        // Prepare data array, similar to how generate_payslip_pdf prepares it
+        $data = [
+            'staff' => (object)($staff_details[0] ?? []),
+            'salary' => (object)$salary_data,
+            'month_name' => date('F', mktime(0, 0, 0, $month, 10)),
+            'year' => $year,
+            'company_assets' => (object)($company_assets ?? [])
+        ];
+
+        // Load the view directly without generating PDF
+        $this->load->view('admin/payslip_template', $data);
     }
 }

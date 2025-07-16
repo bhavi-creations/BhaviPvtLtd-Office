@@ -1,39 +1,6 @@
-ALTER TABLE `salary_tbl`
-ADD COLUMN `actual_login_days` INT(11) DEFAULT 0 AFTER `worked_days`;
-
-ALTER TABLE `salary_tbl`
-ADD COLUMN `added_working_days` INT(11) DEFAULT 0 AFTER `actual_login_days`;
-
-
--- Create client_advance_tbl
-CREATE TABLE client_advance_tbl (
-    id INT(11) PRIMARY KEY AUTO_INCREMENT,
-    staff_id INT(11) NOT NULL,
-    advance_type VARCHAR(50) NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NULL,
-    description TEXT NULL,
-    total_installments INT(3) NOT NULL,
-    monthly_installment_amount DECIMAL(10,2) NOT NULL,
-    paid_amount DECIMAL(10,2) DEFAULT 0.00,
-    balance_amount DECIMAL(10,2) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
-    approved_by INT(11) NULL,
-    approved_at DATETIME NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (staff_id) REFERENCES staff_tbl(id) ON DELETE CASCADE
-);
-
--- Create installment_payments_tbl
-CREATE TABLE installment_payments_tbl (
-    id INT(11) PRIMARY KEY AUTO_INCREMENT,
-    client_advance_id INT(11) NOT NULL, -- Renamed from loan_id
-    payment_date DATE NOT NULL,
-    amount_paid DECIMAL(10,2) NOT NULL,
-    payment_method VARCHAR(50) NULL,
-    remarks TEXT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (client_advance_id) REFERENCES client_advance_tbl(id) ON DELETE CASCADE
-);
+ALTER TABLE `staff_tbl`
+ADD COLUMN `designation` VARCHAR(255) NULL AFTER `department_id`,
+ADD COLUMN `bank_name` VARCHAR(255) NULL AFTER `designation`,
+ADD COLUMN `bank_account_no` VARCHAR(255) NULL AFTER `bank_name`,
+ADD COLUMN `ifsc_code` VARCHAR(255) NULL AFTER `bank_account_no`,
+ADD COLUMN `pan_adhar_no` VARCHAR(255) NULL AFTER `ifsc_code`;

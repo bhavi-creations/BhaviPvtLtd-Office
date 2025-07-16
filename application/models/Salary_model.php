@@ -353,7 +353,8 @@ class Salary_model extends CI_Model
     }
 
 
-     public function get_payslip_path_by_salary_id($salary_id)
+
+       public function get_payslip_path_by_salary_id($salary_id)
     {
         $this->db->select('payslip_pdf_path');
         $this->db->where('id', $salary_id);
@@ -365,4 +366,21 @@ class Salary_model extends CI_Model
         }
         return null;
     }
+
+
+
+
+
+
+
+
+
+    public function get_latest_salary_record_for_testing() {
+    $this->db->select('staff_id, month, year');
+    $this->db->from('salary_tbl');
+    $this->db->order_by('id', 'DESC');
+    $this->db->limit(1);
+    $query = $this->db->get();
+    return $query->row(); // Return a single row object
+}
 }
