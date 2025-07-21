@@ -147,6 +147,12 @@
             </ul>
           </li>
 
+
+
+
+       
+
+
           <li class="treeview">
             <a href="#">
               <i class="fa fa-users"></i> <span>Clients</span>
@@ -157,11 +163,13 @@
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url(); ?>add-client"><i class="fa fa-circle-o"></i> Add Client</a></li>
               <li><a href="<?php echo base_url(); ?>manage-client"><i class="fa fa-circle-o"></i> Manage Client</a></li>
+
               <li class="<?= ($this->uri->segment(1) == 'client_advances') ? 'active' : ''; ?>">
                 <a href="<?= base_url('client_advances'); ?>">
                   <i class="fa fa-circle-o"></i> <span>Client Advances</span>
                 </a>
               </li>
+              <li><a href="<?php echo base_url(); ?>client/select_client_for_services"><i class="fa fa-circle-o"></i> Client Services & Payments</a></li>
             </ul>
           </li>
           <!--<li class="treeview">-->
