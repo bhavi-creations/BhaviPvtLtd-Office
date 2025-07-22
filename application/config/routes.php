@@ -161,3 +161,13 @@ $route['salary/download_my_payslip/(:num)'] = 'salary/download_my_payslip/$1';
 
 
 
+
+
+// Employee Extra Work Routes
+$route['extra-work/my/add']        = 'employee_extra_work/add_my_entry';
+$route['extra-work/my/add/action'] = 'employee_extra_work/add_my_entry_action';
+$route['extra-work/my/manage']     = 'employee_extra_work/manage_my_entries';
+$route['extra-work/my/edit/(:num)'] = 'employee_extra_work/edit_my_entry/$1';
+$route['extra-work/my/update/(:num)'] = 'employee_extra_work/update_my_entry_action/$1';
+$route['extra-work/my/delete/(:num)'] = 'employee_extra_work/delete_my_entry/$1';
+$route['extra-work/my/view/(:num)'] = 'employee_extra_work/view_my_entry/$1'; // ADDED missing route for view

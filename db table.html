@@ -1,51 +1,16 @@
-CREATE TABLE `client_packages_tbl` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `client_id` INT(11) NOT NULL, -- This links to clients_tbl.client_id
-    `service_name` VARCHAR(255) NOT NULL,
-    `amount` DECIMAL(10, 2) NOT NULL,
-    `service_date` DATE NOT NULL,
-    `description` TEXT NULL DEFAULT NULL,
-    `paid_amount` DECIMAL(10, 2) NOT NULL DEFAULT '0.00', -- Tracks how much has been paid for this service
-    `status` VARCHAR(50) NOT NULL DEFAULT 'pending', -- e.g., 'pending', 'partially_paid', 'paid'
-    `added_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    `updated_on` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(),
-    PRIMARY KEY (`id`),
-    INDEX `fk_client_packages_client_id` (`client_id`),
-    CONSTRAINT `fk_client_packages_client_id` FOREIGN KEY (`client_id`) REFERENCES `clients_tbl` (`client_id`) ON UPDATE CASCADE ON DELETE CASCADE
+CREATE TABLE `employee_extra_work_tbl` (
+    `work_id` INT(11) NOT NULL AUTO_INCREMENT,
+    `employee_id` INT(11) NOT NULL, -- Foreign key to staff_tbl.id
+    `project_name` VARCHAR(255) NOT NULL,
+    `task` VARCHAR(255) NOT NULL,
+    `work_description` TEXT NOT NULL,
+    `hours_worked` DECIMAL(5,2) NOT NULL,
+    `work_date` DATE NOT NULL,
+    `assigned_by` VARCHAR(255) DEFAULT NULL, -- Name or ID of the person who assigned the work
+    `work_status` ENUM('not_yet_started', 'on_going', 'completed', 'pending') DEFAULT 'not_yet_started', -- Updated statuses
+    `notes` TEXT DEFAULT NULL, -- Optional: Any additional notes about the extra work
+    `added_on` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_on` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`work_id`),
+    FOREIGN KEY (`employee_id`) REFERENCES `staff_tbl`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-CREATE TABLE `client_package_payments_tbl` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `package_id` INT(11) NULL DEFAULT NULL, -- Links to client_packages_tbl.id (can be NULL for general payments)
-    `payment_amount` DECIMAL(10, 2) NOT NULL,
-    `payment_date` DATE NOT NULL,
-    `payment_method` VARCHAR(100) NULL DEFAULT NULL, -- e.g., 'Cash', 'Bank Transfer', 'UPI', 'Cheque'
-    `notes` TEXT NULL DEFAULT NULL,
-    `added_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    PRIMARY KEY (`id`),
-    INDEX `fk_client_package_payments_package_id` (`package_id`),
-    CONSTRAINT `fk_client_package_payments_package_id` FOREIGN KEY (`package_id`) REFERENCES `client_packages_tbl` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-
-
-
-
--- Add Service End Date
-ALTER TABLE `client_packages_tbl`
-ADD COLUMN `service_end_date` DATE NULL DEFAULT NULL AFTER `service_date`;
-
--- Add Payment Method to Service (as requested)
-ALTER TABLE `client_packages_tbl`
-ADD COLUMN `payment_method` VARCHAR(100) NULL DEFAULT NULL AFTER `amount`;
-
-
-
-ALTER TABLE client_package_payments_tbl
-ADD COLUMN expected_amount DECIMAL(10,2) NULL;
-
-ALTER TABLE client_package_payments_tbl
-ADD COLUMN payment_status VARCHAR(50) NULL;

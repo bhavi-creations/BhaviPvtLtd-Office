@@ -26,10 +26,10 @@ $attendance_today = $this->Attendance_model->select_attendance_by_date($staff_id
 $last_login = $this->Attendance_model->get_last_login($staff_id);
 
 if (!function_exists('format_datetime')) {
-    function format_datetime($datetime)
-    {
-        return date('d M Y, h:i A', strtotime($datetime));
-    }
+  function format_datetime($datetime)
+  {
+    return date('d M Y, h:i A', strtotime($datetime));
+  }
 }
 ?>
 
@@ -197,9 +197,25 @@ if (!function_exists('format_datetime')) {
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url(); ?>add-staff-work-reports"><i class="fa fa-circle-o"></i> Add Work Report</a></li>
               <li><a href="<?php echo base_url(); ?>view-work-reports"><i class="fa fa-circle-o"></i> View Work Reports</a></li>
+
+              <li class="treeview">
+                <a href="#">
+                  <i class="mdi mdi-clipboard-text"></i>
+                  <span>My Extra Work</span>
+                  <span class="pull-right-container">
+                    <i class="fa fa-angle-right pull-right"></i>
+                  </span>
+                </a>
+                <ul class="treeview-menu">
+                  <li><a href="<?php echo base_url('employee_extra_work/add_my_entry'); ?>"><i class="ti-more"></i>Add My Work Sheet</a></li>
+                  <li><a href="<?php echo base_url('employee_extra_work/manage_my_entries'); ?>"><i class="ti-more"></i>Manage My Work Sheets</a></li>
+                </ul>
+              </li>
             </ul>
           </li>
 
+
+          
         </ul>
       </section>
       <!-- /.sidebar -->
