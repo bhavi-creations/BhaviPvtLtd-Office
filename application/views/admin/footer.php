@@ -5,7 +5,7 @@
 
 </div>
 <script src="<?php echo base_url(); ?>assets/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="<?php echo base_url(); ?>assets/bower_components/jquery-ui/jquery-ui.min.js"></script> 
+<script src="<?php echo base_url(); ?>assets/bower_components/jquery-ui/jquery-ui.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
@@ -319,7 +319,7 @@
 
     // Initialize DataTables for multiple tables with buttons
     // Initialize DataTables for multiple tables with buttons
-    $('#example1, #attendance, #salary, #leave, #work_reports, #project_tasks').DataTable({
+    $('#example1, #attendance, #salary, #leave, #work_reports, #project_tasks, #all_extra_work_entries_table').DataTable({
       dom: 'Bfrtip',
       buttons: [
         'copy', 'csv', 'excel', 'pdf', 'print'

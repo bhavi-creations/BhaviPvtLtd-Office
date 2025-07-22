@@ -45,12 +45,6 @@ class Extra_Work_model extends CI_Model
         }
     }
 
-    /**
-     * Retrieves all extra work entries, optionally filtered by employee ID.
-     * Joins with your staff table to get employee details.
-     * @param int|null $employee_id Optional: Filter by specific employee.
-     * @return array An array of extra work entries with employee details.
-     */
     public function get_extra_work_entries($employee_id = null)
     {
         $this->db->select('ew.*, s.staff_name AS employee_name, s.email AS employee_email, s.mobile AS employee_mobile');
@@ -101,9 +95,7 @@ class Extra_Work_model extends CI_Model
         return $this->db->affected_rows() > 0;
     }
 
-    /**
-     * Get a list of all employees from staff_tbl (for validation/lookup if needed).
-     */
+
     public function get_all_employees()
     {
         $this->db->select('id AS employee_id, staff_name AS employee_name');
@@ -112,16 +104,69 @@ class Extra_Work_model extends CI_Model
         return $query->result_array();
     }
 
-    /**
-     * Checks if a given employee_id exists in the staff_tbl.
-     * Useful for validating manually entered employee IDs.
-     * @param int $employee_id
-     * @return bool
-     */
     public function employee_exists($employee_id)
     {
         $this->db->where('id', $employee_id);
         $query = $this->db->get('staff_tbl');
         return $query->num_rows() > 0;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+public function get_all_extra_work_for_admin()
+{
+    // Select all columns from employee_extra_work_tbl (ewe.*)
+    // Select staff_name and employee_id as staff_employee_id from staff_tbl (s)
+    // Select department_name from department_tbl (d)
+    $this->db->select('ewe.*, s.staff_name, s.employee_id AS staff_employee_id, d.department_name');
+
+    // Use the correct table name for extra work entries
+    $this->db->from('employee_extra_work_tbl ewe');
+
+    // Join staff_tbl using the correct table name
+    // Assuming 'ewe.employee_id' links to 's.id' in 'staff_tbl'
+    $this->db->join('staff_tbl s', 's.id = ewe.employee_id', 'left');
+
+    // Join department_tbl using the correct table name
+    // Assuming 's.department_id' links to 'd.id' in 'department_tbl'
+    $this->db->join('department_tbl d', 'd.id = s.department_id', 'left');
+
+    // Add back the order by clauses from your working code
+    $this->db->order_by('ewe.work_date', 'DESC');
+    $this->db->order_by('ewe.added_on', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result_array();
+}
+    public function get_extra_work_by_id($work_id)
+{
+    // Select all columns from employee_extra_work_tbl (ewe.*)
+    // Select staff_name and employee_id as staff_employee_id from staff_tbl (s)
+    // Select department_name from department_tbl (d)
+    $this->db->select('ewe.*, s.staff_name, s.employee_id AS staff_employee_id, d.department_name');
+
+    // Use the correct table name for extra work entries
+    $this->db->from('employee_extra_work_tbl ewe'); 
+
+    // Join staff_tbl using the correct table name
+    // Assuming 'ewe.employee_id' links to 's.id' in 'staff_tbl'
+    $this->db->join('staff_tbl s', 's.id = ewe.employee_id', 'left'); 
+
+    // Join department_tbl using the correct table name
+    // Assuming 's.department_id' links to 'd.id' in 'department_tbl'
+    $this->db->join('department_tbl d', 'd.id = s.department_id', 'left'); 
+
+    $this->db->where('ewe.work_id', $work_id); // Use alias 'ewe' for work_id
+    $query = $this->db->get();
+    return $query->row_array();
+}
 }

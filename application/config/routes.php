@@ -171,3 +171,21 @@ $route['extra-work/my/edit/(:num)'] = 'employee_extra_work/edit_my_entry/$1';
 $route['extra-work/my/update/(:num)'] = 'employee_extra_work/update_my_entry_action/$1';
 $route['extra-work/my/delete/(:num)'] = 'employee_extra_work/delete_my_entry/$1';
 $route['extra-work/my/view/(:num)'] = 'employee_extra_work/view_my_entry/$1'; // ADDED missing route for view
+
+
+
+
+
+
+
+
+
+
+
+// Admin Extra Work Routes
+// These routes map to Admin_Extra_Work controller directly in 'application/controllers/'
+$route['admin/extra-work/manage']       = 'Admin_Extra_Work/manage_all_entries';
+$route['admin/extra-work/view/(:num)']  = 'Admin_Extra_Work/view_entry/$1';
+$route['admin/extra-work/edit/(:num)']  = 'Admin_Extra_Work/edit_entry/$1';
+$route['admin/extra-work/update/(:num)'] = 'Admin_Extra_Work/update_entry_action/$1'; // For form submission
+$route['admin/extra-work/delete/(:num)'] = 'Admin_Extra_Work/delete_entry/$1';
