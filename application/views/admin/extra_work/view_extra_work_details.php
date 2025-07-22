@@ -31,10 +31,7 @@
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
                                     <tbody>
-                                        <tr>
-                                            <th>Work ID:</th>
-                                            <td><?php echo html_escape($entry['work_id']); ?></td>
-                                        </tr>
+                                        
                                         <tr>
                                             <th>Employee ID:</th>
                                             <td><?php echo html_escape($entry['staff_employee_id']); ?></td>
