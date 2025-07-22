@@ -20,7 +20,6 @@ class Work_Reports_model extends CI_Model
         $this->db->insert("work_reports_tbl", $data);
         return $this->db->insert_id();
     }
-
     function select_work_reports()
     {
         $this->db->order_by('work_reports_tbl.on_date', 'DESC');
@@ -30,27 +29,35 @@ class Work_Reports_model extends CI_Model
         if ($qry->num_rows() > 0) {
             $result = $qry->result_array();
             foreach ($result as $key => $result_data) {
-                // Task data lookup and safe assignment
+                // Task data lookup and safe assignment (already present)
                 $task_id = $result_data['task_id'];
                 $task_result = $this->tasks_model->select_project_tasks_byID($task_id);
-                // Check if result is not empty and has the first index
                 if (!empty($task_result) && isset($task_result[0])) {
                     $result[$key]['task_data'] = $task_result[0];
                 } else {
-                    // Provide a default empty structure if task data not found
-                    $result[$key]['task_data'] = array('task_name' => 'N/A'); // Default for the view
+                    $result[$key]['task_data'] = array('task_name' => 'N/A');
                 }
 
-                // Staff data lookup and safe assignment
+                // Staff data lookup and safe assignment (already present)
                 $staff_id = $result_data['staff_id'];
                 $staff_result = $this->staff_model->select_staff_byID($staff_id);
-                // Check if result is not empty and has the first index
                 if (!empty($staff_result) && isset($staff_result[0])) {
                     $result[$key]['staff_data'] = $staff_result[0];
                 } else {
-                    // Provide a default empty structure if staff data not found
-                    $result[$key]['staff_data'] = array('staff_name' => 'N/A', 'employee_id' => 'N/A'); // Default for the view
+                    $result[$key]['staff_data'] = array('staff_name' => 'N/A', 'employee_id' => 'N/A');
                 }
+
+                // --- NEW: Project data lookup and safe assignment ---
+                $project_id = $result_data['project_id'];
+                $project_result = $this->projects_model->select_project_byID($project_id); // Using the Projects_model
+
+                if (!empty($project_result) && isset($project_result[0])) {
+                    $result[$key]['project_data'] = $project_result[0]; // Attach the project data
+                } else {
+                    // Provide a default if the project is not found
+                    $result[$key]['project_data'] = array('project_name' => 'N/A');
+                }
+                // --- END NEW ---
             }
             return $result;
         }
