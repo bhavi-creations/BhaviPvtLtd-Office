@@ -56,4 +56,17 @@ class Projects_model extends CI_Model {
         $this->db->update('projects_tbl',$data);
         $this->db->affected_rows();
     }
+
+    function select_project_byID($id)
+    {
+        $this->db->where('id', $id); // Assuming 'id' is the primary key in your projects table
+        $this->db->select("id, project_name"); // Select only the ID and name
+        $this->db->from("projects_tbl"); // <--- CONFIRM YOUR PROJECTS TABLE NAME HERE (e.g., 'projects' or 'project_tbl')
+        $qry = $this->db->get();
+        if ($qry->num_rows() > 0)
+        {
+            return $qry->result_array(); // Returns an array, e.g., [['id' => 1, 'project_name' => 'Project A']]
+        }
+        return array(); // Return an empty array if no project found
+    }
 }
