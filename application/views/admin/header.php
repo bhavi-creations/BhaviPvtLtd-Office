@@ -221,7 +221,7 @@
             <ul class="treeview-menu">
               <li><a href="<?php echo base_url(); ?>add-project-tasks"><i class="fa fa-circle-o"></i> Add Project Tasks</a></li>
               <li><a href="<?php echo base_url(); ?>manage-project-tasks"><i class="fa fa-circle-o"></i> Manage Project Tasks</a></li>
-              <li><a href="<?php echo base_url(); ?>manage-worksheets"><i class="fa fa-circle-o"></i>Manage Worksheets</a></li> <!--aaded by raklumar-->
+              <!-- <li><a href="<?php echo base_url(); ?>manage-worksheets"><i class="fa fa-circle-o"></i>Manage Worksheets</a></li>  -->
             </ul>
           </li>
           <!-- <li class="treeview"><span>Manage Worksheets</span></li> -->

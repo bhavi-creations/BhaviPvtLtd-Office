@@ -54,7 +54,7 @@ After Starting Apache and MySQL in XAMPP, follow the following steps.
 
 3rd Step: Paste in xampp/htdocs/
 
-4rd Step: Change base url in application/config/config.php to "http://localhost/Ofiice-Management-System/"
+4rd Step: Change base url in application/config/config.php to "http://localhost/BhaviPvtLtd-Office/"
 
 5th Step: Open a browser and go to URL “http://localhost/phpmyadmin/”
 
@@ -62,12 +62,12 @@ After Starting Apache and MySQL in XAMPP, follow the following steps.
 
 7th Step: Create a database naming “thub_office” and then click on the import tab
 
-8th Step: Click on browse file and select “thub_office.sql” file which is inside the “database” folder.
+8th Step: Click on browse file and select “thub_office.sql” file which is inside the “database” folder. 
 
 8th Step: Click on go.
 
 After Creating Database,
 
-9th Step: Open a browser and go to URL “http://localhost/Ofiice-Management-System/”
+9th Step: Open a browser and go to URL “http://localhost/BhaviPvtLtd-Office/”
 
 NOTE: Check database for login details. 
